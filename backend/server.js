@@ -8,6 +8,7 @@ const subscriptionRoutes = require("./routes/subscriptionRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 const subscriptionMiddleware = require("./middleware/subscriptionMiddleware");
+const scoreRoutes = require("./routes/scoreRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/scores", scoreRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend is running ");

@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const scoreRoutes = require("./routes/scoreRoutes");
 const drawRoutes = require("./routes/drawRoutes");
+const winnerRoutes = require("./routes/winnerRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 const subscriptionMiddleware = require("./middleware/subscriptionMiddleware");
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/draw", drawRoutes);
+app.use("/api/winners", winnerRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend is running ");

@@ -40,9 +40,8 @@ exports.runDraw = async (req, res) => {
 
       if (!scores || scores.length === 0) continue;
 
-      const userScores = scores.map(s => s.score);
-
-      const matches = userScores.filter(s => numbers.includes(s)).length;
+      const userScores = scores.map((s) => s.score);
+      const matches = userScores.filter((s) => numbers.includes(s)).length;
 
       if (matches >= 3) {
         winners.push({
@@ -59,10 +58,46 @@ exports.runDraw = async (req, res) => {
       await supabase.from("winners").insert(winners);
     }
 
+    const { data: subs } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("status", "active");
+
+    const totalUsers = subs ? subs.length : 0;
+
+    const totalPool = totalUsers * 100;
+
+    const pool5 = totalPool * 0.4;
+    const pool4 = totalPool * 0.35;
+    const pool3 = totalPool * 0.25;
+
+    const winners5 = winners.filter((w) => w.match_type === "5");
+    const winners4 = winners.filter((w) => w.match_type === "4");
+    const winners3 = winners.filter((w) => w.match_type === "3");
+
+    const updateWinnerAmounts = async (group, pool) => {
+      if (group.length === 0) return;
+
+      const amountPerUser = pool / group.length;
+
+      for (let w of group) {
+        await supabase
+          .from("winners")
+          .update({ amount: amountPerUser })
+          .eq("user_id", w.user_id)
+          .eq("draw_id", drawId);
+      }
+    };
+
+    await updateWinnerAmounts(winners5, pool5);
+    await updateWinnerAmounts(winners4, pool4);
+    await updateWinnerAmounts(winners3, pool3);
+
     res.json({
       message: "Draw executed & winners calculated",
       numbers,
       winnersCount: winners.length,
+      totalPool,
     });
 
   } catch (err) {

@@ -9,6 +9,7 @@ const scoreRoutes = require("./routes/scoreRoutes");
 const drawRoutes = require("./routes/drawRoutes");
 const winnerRoutes = require("./routes/winnerRoutes");
 const charityRoutes = require("./routes/charityRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 const subscriptionMiddleware = require("./middleware/subscriptionMiddleware");
@@ -26,12 +27,18 @@ app.post(
 
 app.use(express.json());
 
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:", err);
+  res.status(500).json({ message: "Something broke" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/draw", drawRoutes);
 app.use("/api/winners", winnerRoutes);
 app.use("/api/charities", charityRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend is running ");

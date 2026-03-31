@@ -14,10 +14,10 @@ exports.createCheckoutSession = async (req, res) => {
         },
       ],
 
-      // ✅ IMPORTANT FIXES
-      client_reference_id: req.user.id, // 👈 link user
+      
+      client_reference_id: req.user.id, 
       metadata: {
-        plan: priceId, // 👈 store plan
+        plan: priceId, 
       },
 
       success_url: "http://localhost:3000/success",

@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
 
-      console.log("✅ Checkout completed:", session);
+      console.log("Checkout completed:", session);
 
       // Extract data
       const userId = session.client_reference_id || "test-user";

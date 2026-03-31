@@ -11,15 +11,27 @@ const authMiddleware = require("./middleware/authMiddleware");
 const app = express();
 
 app.use(cors());
+
+// ✅ Webhook MUST be before express.json()
+app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    require("./controllers/webhookController")
+);
+
+// ✅ Then JSON parser
 app.use(express.json());
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/subscription", subscriptionRoutes);
 
+// Root
 app.get("/", (req, res) => {
     res.send("Backend is running ");
 });
 
+// Test DB
 app.get("/test-db", async (req, res) => {
     try {
     const { data, error } = await supabase
@@ -38,6 +50,7 @@ app.get("/test-db", async (req, res) => {
     }
 });
 
+// Protected route
 app.get("/protected", authMiddleware, (req, res) => {
     res.json({
     message: "Protected route accessed",

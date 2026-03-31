@@ -8,6 +8,7 @@ const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const scoreRoutes = require("./routes/scoreRoutes");
 const drawRoutes = require("./routes/drawRoutes");
 const winnerRoutes = require("./routes/winnerRoutes");
+const charityRoutes = require("./routes/charityRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 const subscriptionMiddleware = require("./middleware/subscriptionMiddleware");
@@ -30,6 +31,7 @@ app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/draw", drawRoutes);
 app.use("/api/winners", winnerRoutes);
+app.use("/api/charities", charityRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend is running ");

@@ -4,6 +4,7 @@ const cors = require("cors");
 const supabase = require("./config/supabaseClient");
 
 const authRoutes = require("./routes/authRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
 
 const authMiddleware = require("./middleware/authMiddleware");
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 
 app.get("/", (req, res) => {
     res.send("Backend is running ");

@@ -4,43 +4,36 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import API from "../../lib/api";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     try {
-      setLoading(true);
       setError("");
 
-      const res = await API.post("/auth/login", {
+      await API.post("/auth/signup", {
+        name,
         email,
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
-
-      if (res.data.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
+      alert("Signup successful! Please login.");
+      router.push("/login");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Signup failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md text-black">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Login
+          Signup
         </h2>
 
         {error && (
@@ -48,9 +41,17 @@ export default function LoginPage() {
         )}
 
         <input
+          type="text"
+          placeholder="Name"
+          className="w-full p-3 border border-gray-400 rounded-lg mb-4"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
           type="email"
           placeholder="Email"
-          className="w-full p-3 border border-gray-400 rounded-lg mb-4 text-black"
+          className="w-full p-3 border border-gray-400 rounded-lg mb-4"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -58,30 +59,27 @@ export default function LoginPage() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-3 border border-gray-400 rounded-lg mb-4 text-black"
+          className="w-full p-3 border border-gray-400 rounded-lg mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-black text-white p-3 rounded-lg hover:opacity-90"
+          onClick={handleSignup}
+          className="w-full bg-black text-white p-3 rounded-lg"
         >
-          {loading ? "Logging in..." : "Login"}
+          Signup
         </button>
 
-        {/* ✅ Signup Link Added */}
         <p className="text-center mt-4">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <span
             className="text-blue-500 cursor-pointer"
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/login")}
           >
-            Signup
+            Login
           </span>
         </p>
-
       </div>
     </div>
   );

@@ -24,6 +24,15 @@ exports.runDraw = async (req, res) => {
 
     const drawId = drawData.id;
 
+    const { data: lastDraw } = await supabase
+      .from("draws")
+      .select("*")
+      .order("draw_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const previousJackpot = lastDraw?.jackpot || 0;
+
     const { data: users, error: userError } = await supabase
       .from("users")
       .select("*");
@@ -65,7 +74,8 @@ exports.runDraw = async (req, res) => {
 
     const totalUsers = subs ? subs.length : 0;
 
-    const totalPool = totalUsers * 100;
+    const basePool = totalUsers * 100;
+    const totalPool = basePool + previousJackpot;
 
     const pool5 = totalPool * 0.4;
     const pool4 = totalPool * 0.35;
@@ -74,6 +84,21 @@ exports.runDraw = async (req, res) => {
     const winners5 = winners.filter((w) => w.match_type === "5");
     const winners4 = winners.filter((w) => w.match_type === "4");
     const winners3 = winners.filter((w) => w.match_type === "3");
+
+    let newJackpot = 0;
+
+    if (winners5.length === 0) {
+      newJackpot = pool5;
+    } else {
+      const amountPerUser = pool5 / winners5.length;
+      for (let w of winners5) {
+        await supabase
+          .from("winners")
+          .update({ amount: amountPerUser })
+          .eq("user_id", w.user_id)
+          .eq("draw_id", drawId);
+      }
+    }
 
     const updateWinnerAmounts = async (group, pool) => {
       if (group.length === 0) return;
@@ -89,15 +114,20 @@ exports.runDraw = async (req, res) => {
       }
     };
 
-    await updateWinnerAmounts(winners5, pool5);
     await updateWinnerAmounts(winners4, pool4);
     await updateWinnerAmounts(winners3, pool3);
+
+    await supabase
+      .from("draws")
+      .update({ jackpot: newJackpot })
+      .eq("id", drawId);
 
     res.json({
       message: "Draw executed & winners calculated",
       numbers,
       winnersCount: winners.length,
       totalPool,
+      jackpot: newJackpot,
     });
 
   } catch (err) {

@@ -1,7 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+
 const supabase = require("./config/supabaseClient");
+
 const authRoutes = require("./routes/authRoutes");
+
+const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -30,6 +34,13 @@ app.get("/test-db", async (req, res) => {
     console.error("Server Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
     }
+});
+
+app.get("/protected", authMiddleware, (req, res) => {
+    res.json({
+    message: "Protected route accessed",
+    user: req.user,
+    });
 });
 
 const PORT = 5000;

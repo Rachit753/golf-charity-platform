@@ -17,7 +17,9 @@ const subscriptionMiddleware = require("./middleware/subscriptionMiddleware");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "*"
+}));
 
 app.post(
     "/webhook",

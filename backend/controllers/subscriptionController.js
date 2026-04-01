@@ -20,8 +20,8 @@ exports.createCheckoutSession = async (req, res) => {
         plan: priceId, 
       },
 
-      success_url: "http://localhost:3000/success",
-      cancel_url: "http://localhost:3000/cancel",
+      success_url: "https://golf-charity-platform-snowy-six.vercel.app/success",
+      cancel_url: "https://golf-charity-platform-snowy-six.vercel.app/cancel",
     });
 
     res.json({ url: session.url });

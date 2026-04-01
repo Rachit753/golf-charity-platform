@@ -8,7 +8,7 @@ Users track golf performance, participate in **monthly draw-based rewards**, and
 
 ## Live Demo
 
-🔗 Live URL: *[Add your deployed link]*
+Live URL: https://golf-charity-platform-snowy-six.vercel.app/
 
 **User Login**
 Email: [user@gmail.com](mailto:testuser@example.com)
@@ -17,6 +17,20 @@ Password: 424242
 **Admin Login**
 Email: [rachit@test.com](mailto:admin@example.com)
 Password: 123456
+
+
+---
+
+## Test Payment  
+
+Use Stripe test card:
+
+Card Number: 4242 4242 4242 4242  
+Expiry: Any future date  
+CVV: Any 3 digits
+
+> This project uses Stripe test mode — no real money is charged.
+> Complete flow: Subscribe → Payment → Access unlocked → Participate in draws.
 
 ---
 

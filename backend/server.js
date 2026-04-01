@@ -75,7 +75,7 @@ app.get(
     subscriptionMiddleware,
     (req, res) => {
     res.json({
-        message: "Welcome to premium features 🎉",
+        message: "Welcome to premium features ",
     });
     }
 );

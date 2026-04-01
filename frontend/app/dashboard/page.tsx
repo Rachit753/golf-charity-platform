@@ -84,6 +84,13 @@ export default function Dashboard() {
       {/* WINNINGS */}
       <div className="bg-gray-900 p-5 rounded-xl shadow">
         <h2 className="font-semibold text-lg mb-2">🏆 Total Winnings</h2>
+
+        <button
+          onClick={() => (window.location.href = "/winners")}
+          className="bg-yellow-500 px-4 py-2 rounded-lg">
+          View Winners
+        </button>
+        
         <p className="text-green-400 text-xl font-bold">
           ₹ {data.totalWinnings}
         </p>

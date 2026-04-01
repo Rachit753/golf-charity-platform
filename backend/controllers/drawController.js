@@ -135,3 +135,28 @@ exports.runDraw = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getDrawHistory = async (req, res) => {
+  const { data, error } = await supabase
+    .from("draws")
+    .select(`
+      id,
+      draw_date,
+      numbers,
+      winners (
+        id,
+        match_type,
+        amount,
+        user_id,
+        users ( name )
+      )
+    `)
+    .order("draw_date", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+
+  res.json(data);
+};

@@ -4,12 +4,13 @@ exports.getCharities = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("charities")
-      .select("*");
+      .select("*")
 
     if (error) throw error;
 
     res.json(data);
   } catch (err) {
+    console.error("CHARITIES FETCH ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -27,13 +28,16 @@ exports.selectCharity = async (req, res) => {
 
     const { data, error } = await supabase
       .from("user_charity")
-      .upsert([
-        {
-          user_id: userId,
-          charity_id,
-          percentage,
-        },
-      ]);
+      .upsert(
+        [
+          {
+            user_id: userId,
+            charity_id,
+            percentage,
+          },
+        ],
+        { onConflict: "user_id" }
+      );
 
     if (error) throw error;
 
@@ -51,16 +55,20 @@ exports.getUserCharity = async (req, res) => {
     const { data, error } = await supabase
       .from("user_charity")
       .select(`
-        *,
-        charities(*)
+        percentage,
+        charities (
+          id,
+          name
+        )
       `)
       .eq("user_id", userId)
-      .single();
+      .single(); 
 
     if (error) throw error;
 
     res.json(data);
   } catch (err) {
+    console.error("CHARITY FETCH ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

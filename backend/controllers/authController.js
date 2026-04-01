@@ -3,8 +3,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res) => {
-    const { name, email, password } = req.body;
-
+  const name = req.body.name;
+  const email = req.body.email.trim().toLowerCase();
+  const password = req.body.password;
     try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -34,7 +35,8 @@ exports.login = async (req, res) => {
     console.log("LOGIN HIT");
     console.log("BODY:", req.body);
 
-    const { email, password } = req.body;
+    const email = req.body.email.trim().toLowerCase();
+    const password = req.body.password;
 
     const { data, error } = await supabase
       .from("users")

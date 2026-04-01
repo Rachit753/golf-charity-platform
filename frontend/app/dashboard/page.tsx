@@ -18,7 +18,9 @@ export default function Dashboard() {
     }
   };
 
-  fetchData();
+    fetchData();
+    const interval = setInterval(fetchData, 2000);
+  return () => clearInterval(interval);
 }, []);
 
   const refresh = async () => {
@@ -28,7 +30,8 @@ export default function Dashboard() {
   } catch (err) {
     console.error(err);
   }
-};
+  };
+  
 
   if (!data) return <p className="p-6 text-white">Loading...</p>;
 
@@ -89,6 +92,12 @@ export default function Dashboard() {
       {/* CHARITY */}
       <div className="bg-gray-900 p-5 rounded-xl shadow">
         <h2 className="font-semibold text-lg mb-2">❤️ Your Charity</h2>
+
+        <button
+          onClick={() => (window.location.href = "/charity")}
+          className="bg-pink-500 px-4 py-2 rounded-lg">
+          Select Charity
+        </button>
 
         {data.charity ? (
           <p className="text-gray-300">

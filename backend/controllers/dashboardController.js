@@ -26,11 +26,19 @@ exports.getUserDashboard = async (req, res) => {
     const totalWinnings =
       winnings?.reduce((sum, w) => sum + (w.amount || 0), 0) || 0;
 
-    const { data: charity } = await supabase
-      .from("user_charity")
-      .select("*, charities(*)")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const { data: charity, error: charityError } = await supabase
+  .from("user_charity")
+  .select(`
+    percentage,
+    charities (
+      id,
+      name
+    )
+  `)
+  .eq("user_id", userId)
+  .maybeSingle();
+
+console.log("CHARITY DATA:", charity);
 
     res.json({
       subscription,

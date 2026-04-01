@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
 
-      {/* HERO SECTION */}
       <div className="flex flex-col items-center justify-center text-center h-screen px-6">
         <h1 className="text-5xl font-bold mb-6">
           Play Golf. Win Big. Give Back.

@@ -3,12 +3,16 @@
 import { useEffect, useState } from "react";
 import API from "../../lib/api";
 import { useRouter } from "next/navigation";
+import Navbar from "../../components/Navbar";
 
 export default function CharityPage() {
   const [charities, setCharities] = useState<any[]>([]);
   const [selected, setSelected] = useState("");
   const [percentage, setPercentage] = useState(10);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
 
   const fetchCharities = async () => {
     try {
@@ -16,103 +20,107 @@ export default function CharityPage() {
       setCharities(res.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const selectCharity = async () => {
+    try {
+      if (!selected) {
+        setMessage("Please select a charity first");
+        return;
+      }
 
-const router = useRouter();
+      await API.post("/charities/select", {
+        charity_id: selected,
+        percentage,
+      });
 
-const selectCharity = async () => {
-  try {
-    if (!selected) {
-      setMessage("Please select a charity first");
-      return;
+      setMessage("Charity selected!");
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setMessage("Error selecting charity");
     }
-
-    await API.post("/charities/select", {
-      charity_id: selected,
-      percentage,
-    });
-
-    setMessage("Charity selected!");
-
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1000);
-
-  } catch (err) {
-    console.error(err);
-    setMessage("Error selecting charity");
-  }
-};
+  };
 
   useEffect(() => {
     fetchCharities();
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        Choose Your Charity 
+    <div className="min-h-screen bg-black text-white p-6 space-y-6">
+      <Navbar />
+      <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        Choose Your Charity
       </h1>
 
-      {/* MESSAGE */}
       {message && (
-        <div className="mb-4 p-3 bg-green-600 rounded">
+        <div className="mb-4 p-3 bg-green-600 rounded-xl">
           {message}
         </div>
       )}
 
-      {/* CHARITY LIST */}
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-  {charities.map((c) => (
-    <button
-      key={c.id}
-      onClick={() => {
-        console.log("Selected:", c.id);
-        setSelected(c.id);
-      }}
-      className={`p-4 rounded-xl w-full text-left transition ${
-        selected === c.id
-          ? "bg-blue-500"
-          : "bg-gray-900 hover:bg-gray-800"
-      }`}
-    >
-      <h2 className="font-semibold">{c.name}</h2>
-      <p className="text-gray-400 text-sm">
-        {c.description}
-      </p>
-    </button>
-  ))}
-</div>
+      {loading ? (
+        <div className="animate-pulse text-gray-400">
+          Loading data...
+        </div>
+      ) : charities.length === 0 ? (
+        <p className="text-gray-500 italic">
+          No data available yet
+        </p>
+      ) : (
+        <>
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            {charities.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setSelected(c.id)}
+                className={`p-4 rounded-2xl w-full text-left transition duration-200 hover:scale-[1.02] ${
+                  selected === c.id
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 shadow"
+                    : "bg-gray-900 hover:bg-gray-800"
+                }`}
+              >
+                <h2 className="text-xl font-semibold tracking-wide">
+                  {c.name}
+                </h2>
 
-      {/* PERCENTAGE */}
-      <div className="bg-gray-900 p-4 rounded-xl mb-4">
-        <label className="block mb-2">
-          Contribution Percentage (%)
-        </label>
+                <p className="text-gray-400 text-sm">
+                  {c.description}
+                </p>
+              </button>
+            ))}
+          </div>
 
-        <input
-          type="number"
-          min={10}
-          value={percentage}
-          onChange={(e) =>
-            setPercentage(Number(e.target.value))
-          }
-          className="w-full p-2 rounded text-black"
-        />
-      </div>
+          <div className="bg-gray-900/80 backdrop-blur p-6 rounded-2xl shadow-lg border border-gray-800 hover:scale-[1.02] transition duration-200">
+            <label className="block mb-2 text-xl font-semibold tracking-wide">
+              Contribution Percentage (%)
+            </label>
 
-      {/* BUTTON */}
-      <button
-  onClick={() => {
-    console.log("Button clicked");
-    selectCharity();
-  }}
-  className="bg-green-500 px-6 py-3 rounded-xl hover:bg-green-600"
->
-  Save Charity
-</button>
+            <input
+              type="number"
+              min={10}
+              value={percentage}
+              onChange={(e) =>
+                setPercentage(Number(e.target.value))
+              }
+              className="w-full p-3 rounded-xl text-black outline-none"
+            />
+          </div>
+
+          <button
+            onClick={selectCharity}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-3 rounded-xl shadow hover:opacity-90 transition"
+          >
+            Save Charity
+          </button>
+        </>
+      )}
     </div>
   );
 }

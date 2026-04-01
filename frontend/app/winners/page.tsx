@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import API from "../../lib/api";
+import Navbar from "../../components/Navbar";
 
 export default function WinnersPage() {
   const [draws, setDraws] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
@@ -12,6 +14,8 @@ export default function WinnersPage() {
       setDraws(res.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -21,22 +25,29 @@ export default function WinnersPage() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">
+      <Navbar />
+
+      <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
         Winners & Draw History
       </h1>
 
-      {draws.length === 0 ? (
-        <p className="text-gray-400">No draws yet</p>
+      {loading ? (
+        <div className="animate-pulse text-gray-400">
+          Loading data...
+        </div>
+      ) : draws.length === 0 ? (
+        <p className="text-gray-500 italic">
+          No data available yet
+        </p>
       ) : (
         <div className="space-y-6">
           {draws.map((draw) => (
             <div
               key={draw.id}
-              className="bg-gray-900 p-5 rounded-xl"
+              className="bg-gray-900/80 backdrop-blur p-6 rounded-2xl shadow-lg border border-gray-800 hover:scale-[1.02] transition duration-200"
             >
-              {/* DRAW INFO */}
               <div className="mb-3">
-                <h2 className="font-semibold">
+                <h2 className="text-xl font-semibold tracking-wide">
                   {draw.draw_date}
                 </h2>
 
@@ -44,10 +55,8 @@ export default function WinnersPage() {
                   Numbers: {draw.numbers.join(", ")}
                 </p>
               </div>
-
-              {/* WINNERS */}
               <div>
-                <h3 className="font-semibold mb-2">
+                <h3 className="text-xl font-semibold tracking-wide mb-2">
                   Winners:
                 </h3>
 
@@ -64,8 +73,8 @@ export default function WinnersPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500">
-                    No winners
+                  <p className="text-gray-500 italic">
+                    No data available yet
                   </p>
                 )}
               </div>
